@@ -494,6 +494,16 @@ applySize();
 // при открытии — отдельный экран выбора задания
 showChooser();
 
+// ---------- запрет увеличения экрана ----------
+// Android слушается настройки в index.html. Safari на iPhone её не слушается,
+// поэтому здесь отменяем жест «двумя пальцами»: щипок и разведение.
+["gesturestart", "gesturechange", "gestureend"].forEach(function (name) {
+  document.addEventListener(name, function (e) { e.preventDefault(); }, { passive: false });
+});
+document.addEventListener("touchmove", function (e) {
+  if (e.touches && e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
 if ("speechSynthesis" in window) {
   pickVoice();
   if (speechSynthesis.addEventListener) speechSynthesis.addEventListener("voiceschanged", pickVoice);
