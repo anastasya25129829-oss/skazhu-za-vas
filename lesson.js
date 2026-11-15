@@ -81,7 +81,7 @@ function showLessonStart() {
   var who = el("div", "who-pick");
   [
     { id: "helper", icon: "🤝", title: "Вместе с помощником", sub: "логопед или родные рядом и объясняют" },
-    { id: "solo", icon: "🙋", title: "Сам", sub: "приложение подсказывает голосом" }
+    { id: "solo", icon: "🙋", title: "Сам", sub: "приложение подсказывает и показывает ответ" }
   ].forEach(function (o) {
     var b = el("button", "who" + (settings.lessonWho === o.id ? " on" : ""));
     b.type = "button";
@@ -111,8 +111,7 @@ function startLesson(topic) {
   lesson = { topic: topic, who: settings.lessonWho, phase: "learn", i: 0, wrong: 0, lockedUntil: 0 };
   // в варианте «Сам» прячем переключатель режимов и настройки, чтобы случайно не уйти
   document.body.classList.toggle("solo-run", isSolo());
-  if (isSolo()) say("Посмотрите и послушайте.");
-  showLearn(true);
+  showLearn();
 }
 
 // ---------- шапка урока: выход и счётчик ----------
@@ -144,31 +143,29 @@ function lessonHeader(progress) {
 
 // ---------- шаг 1: смотрим и слушаем ----------
 
-function showLearn(first) {
+// Слово звучит только по кнопке «🔊 Послушать», само приложение ничего не говорит
+function showLearn() {
   var items = lesson.topic.items;
   var it = items[lesson.i];
   main.innerHTML = "";
   main.appendChild(lessonHeader((lesson.i + 1) + " из " + items.length));
-  main.appendChild(el("p", "lesson-step", "Смотрим и слушаем"));
+  main.appendChild(el("p", "lesson-step", isSolo() ? "Посмотрите и нажмите «Послушать»" : "Смотрим и слушаем"));
 
-  var big = el("button", "learn-card");
-  big.type = "button";
+  var big = el("div", "learn-card");
   big.appendChild(iconNode(it[0], "learn-icon", it[2]));
   big.appendChild(el("span", "learn-word", it[1]));
-  big.addEventListener("click", function () { say(it[1]); });
   main.appendChild(big);
 
   var row = el("div", "lesson-buttons");
-  row.appendChild(bigButton("🔊 Ещё раз", "plain", function () { say(it[1]); }));
+  row.appendChild(bigButton("🔊 Послушать", "plain", function () { say(it[1]); }));
   var last = lesson.i === items.length - 1;
   row.appendChild(bigButton(last ? "Проверим себя →" : "Дальше →", "speak", function () {
     if (tapsLocked()) return;
     if (last) startQuiz();
-    else { lesson.i++; showLearn(false); }
+    else { lesson.i++; showLearn(); }
   }));
   main.appendChild(row);
 
-  say(it[1], first && isSolo());
   lockTaps();
   window.scrollTo(0, 0);
 }
@@ -179,11 +176,10 @@ function startQuiz() {
   lesson.phase = "quiz";
   lesson.order = shuffle(lesson.topic.items);
   lesson.i = 0;
-  if (isSolo()) say("Теперь найдите картинку.");
-  showQuiz(true);
+  showQuiz();
 }
 
-function showQuiz(first) {
+function showQuiz() {
   var it = lesson.order[lesson.i];
   lesson.wrong = 0;
   var others = shuffle(lesson.topic.items.filter(function (x) { return x[1] !== it[1] && x[0] !== it[0]; })).slice(0, 2);
@@ -193,12 +189,16 @@ function showQuiz(first) {
   main.appendChild(lessonHeader((lesson.i + 1) + " из " + lesson.order.length));
   main.appendChild(el("p", "lesson-step", "Найдите картинку"));
 
+  // кнопка со словом: нажал — слово звучит
   var ask = el("button", "quiz-word");
   ask.type = "button";
   ask.appendChild(el("span", null, "🔊 "));
   ask.appendChild(el("span", null, it[1]));
-  ask.addEventListener("click", function () { askAloud(it, false); });
+  ask.addEventListener("click", function () { say(it[1]); });
   main.appendChild(ask);
+  // подсказки в варианте «Сам» — текстом, без голоса
+  var note = el("p", "lesson-note", "");
+  lesson.note = note;
 
   var grid = el("div", "quiz-grid");
   var cards = [];
@@ -216,6 +216,7 @@ function showQuiz(first) {
     grid.appendChild(b);
   });
   main.appendChild(grid);
+  main.appendChild(note);
 
   if (!isSolo()) {
     var row = el("div", "lesson-buttons");
@@ -225,20 +226,14 @@ function showQuiz(first) {
   }
 
   lesson.answered = false;
-  askAloud(it, first && isSolo());
   lockTaps();
   window.scrollTo(0, 0);
-}
-
-function askAloud(it, after) {
-  // «Найдите: чай» звучит понятно с любым словом, «Где спать?» — нет
-  say(isSolo() ? "Найдите: " + it[1] : it[1], after);
 }
 
 function answerRight(btn, it) {
   lesson.answered = true;
   btn.classList.add("right");
-  if (isSolo()) say("Да! " + it[1]);
+  if (lesson.note) lesson.note.textContent = "👍 Верно!";
   // переходим дальше, только если человек за это время не вышел и не пропустил вопрос
   var same = lesson, index = lesson.i;
   setTimeout(function () {
@@ -253,20 +248,20 @@ function answerWrong(btn, it, cards) {
   lesson.wrong++;
   // «Сам»: после двух ошибок приложение показывает верную картинку
   if (isSolo()) {
-    if (lesson.wrong >= 2) showAnswer(cards, it, true);
-    else say("Попробуйте ещё. Найдите: " + it[1]);
+    if (lesson.wrong >= 2) showAnswer(cards, it);
+    else lesson.note.textContent = "Попробуйте ещё";
   }
 }
 
-function showAnswer(cards, it, speak) {
+function showAnswer(cards, it) {
   cards.forEach(function (c) { if (c.item === it) c.btn.classList.add("hint"); });
-  if (speak) say("Вот она: " + it[1] + ". Нажмите на эту картинку.");
+  if (lesson.note) lesson.note.textContent = "Вот эта картинка — нажмите на неё";
 }
 
 function nextQuiz() {
   if (!lesson) return;
   lesson.i++;
-  if (lesson.i < lesson.order.length) showQuiz(false);
+  if (lesson.i < lesson.order.length) showQuiz();
   else showLessonDone();
 }
 
@@ -283,6 +278,5 @@ function showLessonDone() {
   box.appendChild(bigButton("Другая тема", "plain", showLessonStart));
   main.appendChild(box);
   document.body.classList.remove("solo-run");
-  say("Вы хорошо поработали!");
   window.scrollTo(0, 0);
 }

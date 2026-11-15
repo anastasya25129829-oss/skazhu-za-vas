@@ -469,6 +469,15 @@ body.solo-run .top { display: none; }
 
 .quiz-icon { font-size: 4rem; line-height: 1; }
 
+.lesson-note {
+  min-height: 1.6em;
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--head);
+}
+
 .quiz-card.right { border-color: var(--yes); background: #e7f4ec; }
 .quiz-card.hint { animation: pulse 1.2s ease-in-out infinite; border-color: #e0b84a; }
 .quiz-card.shake { animation: shake .4s; }

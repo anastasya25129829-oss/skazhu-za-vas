@@ -292,13 +292,13 @@ function showStep() {
 
 function showDone() {
   finished = true;
-  say(sentenceText());
+  // само ничего не говорим: звук только по кнопке «Сказать»
   main.innerHTML = "";
   var box = el("div", "done");
   box.appendChild(el("p", "done-mark", "✅"));
   box.appendChild(el("h2", "question", "Готово!"));
-  box.appendChild(el("p", "done-hint", "Покажите родным или скажите ещё раз."));
-  var again = el("button", "big speak", "🔊 Сказать ещё раз");
+  box.appendChild(el("p", "done-hint", "Нажмите «Сказать» или покажите родным."));
+  var again = el("button", "big speak", "🔊 Сказать");
   again.type = "button";
   again.addEventListener("click", function () { say(sentenceText()); });
   var fresh = el("button", "big plain", "Новое предложение");
@@ -339,9 +339,9 @@ function showBlocks() {
 
 // ---------- выбор задания и переключение режимов ----------
 var MODES = [
+  { id: "lesson", icon: "🎓", title: "Учим", sub: "урок: что значит каждый значок" },
   { id: "steps", icon: "👣", title: "По шагам", sub: "приложение ведёт, вопрос за вопросом" },
-  { id: "blocks", icon: "🧩", title: "Кубики", sub: "слова в любом порядке" },
-  { id: "lesson", icon: "🎓", title: "Учим", sub: "урок: что значит каждый значок" }
+  { id: "blocks", icon: "🧩", title: "Кубики", sub: "слова в любом порядке" }
 ];
 
 var titleEl = document.getElementById("mode-title");
@@ -398,7 +398,6 @@ document.querySelectorAll(".answer").forEach(function (b) {
   b.addEventListener("click", function () { say(b.getAttribute("data-say")); });
 });
 document.getElementById("speak").addEventListener("click", function () { say(sentenceText()); });
-wordsEl.addEventListener("click", function () { say(sentenceText()); });
 document.getElementById("clear").addEventListener("click", function () {
   sentence = [];
   renderSentence();
