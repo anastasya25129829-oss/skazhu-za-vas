@@ -107,8 +107,10 @@ function showLessonStart() {
   main.appendChild(grid);
 }
 
-function startLesson(topic) {
-  lesson = { topic: topic, who: settings.lessonWho, phase: "learn", i: 0, wrong: 0, lockedUntil: 0 };
+function startLesson(base) {
+  // в тему добавляются свои карточки родных из этой категории
+  var topic = { name: base.name, icon: base.icon, items: base.items.concat(customForLesson(base.name)) };
+  lesson = { base: base, topic: topic, who: settings.lessonWho, phase: "learn", i: 0, wrong: 0, lockedUntil: 0 };
   // в варианте «Сам» прячем переключатель режимов и настройки, чтобы случайно не уйти
   document.body.classList.toggle("solo-run", isSolo());
   showLearn();
@@ -167,7 +169,9 @@ function showLearn() {
   }));
   main.appendChild(row);
 
-  say(it[1]);
+  // «Сам»: перед первой картинкой — инструкция, дальше только слово
+  if (isSolo() && lesson.i === 0) { say("Посмотрите и послушайте."); say(it[1], true); }
+  else say(it[1]);
   lockTaps();
   window.scrollTo(0, 0);
 }
@@ -229,7 +233,11 @@ function showQuiz() {
 
   lesson.answered = false;
   // «Сам»: слово звучит сразу, как появился вопрос (только слово, без инструкций)
-  if (isSolo()) say(it[1]);
+  if (isSolo()) {
+    // перед первым вопросом — инструкция, дальше только слово
+    if (lesson.i === 0) { say("Теперь найдите картинку."); say(it[1], true); }
+    else say(it[1]);
+  }
   lockTaps();
   window.scrollTo(0, 0);
 }
@@ -259,13 +267,15 @@ function answerWrong(btn, it, cards) {
   // «Сам»: после двух ошибок приложение показывает верную картинку
   if (isSolo()) {
     if (lesson.wrong >= 2) showAnswer(cards, it);
-    else lesson.note.textContent = "Попробуйте ещё";
+    else { lesson.note.textContent = "Попробуйте ещё"; say("Попробуйте ещё."); }
   }
 }
 
 function showAnswer(cards, it) {
   cards.forEach(function (c) { if (c.item === it) c.btn.classList.add("hint"); });
   if (lesson.note) lesson.note.textContent = "Вот эта картинка — нажмите на неё";
+  // в «Сам» подсказка звучит; у помощника кнопка «Подсказка» только подсвечивает
+  if (isSolo()) say("Вот эта картинка. Нажмите на неё.");
 }
 
 function nextQuiz() {
@@ -278,7 +288,7 @@ function nextQuiz() {
 // ---------- конец урока ----------
 
 function showLessonDone() {
-  var topic = lesson.topic;
+  var topic = lesson.base;
   main.innerHTML = "";
   var box = el("div", "done");
   box.appendChild(el("p", "done-mark", "🌟"));

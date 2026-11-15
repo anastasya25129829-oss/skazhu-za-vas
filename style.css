@@ -262,6 +262,67 @@ body.huge .chip { font-size: 1.65rem; }
 
 .person-btn.remove { background: #e7e1d6; color: var(--ink); }
 
+/* ---------- свои карточки ---------- */
+
+/* фото своей карточки — скруглённый квадрат, чтобы отличалось от круглых фото близких */
+.photo.own { border-radius: 22%; }
+
+.settings .custom-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-height: 0;
+  margin: 10px 0;
+  text-align: left;
+}
+.custom-label { font-weight: 700; font-size: 1.1rem; }
+.custom-hint { color: var(--muted); font-size: .95rem; }
+
+.custom-select, .custom-input {
+  width: 100%;
+  min-height: 50px;
+  padding: 8px 12px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  font-size: 1.15rem;
+}
+
+.custom-select:focus, .custom-input:focus { outline: none; border-color: var(--head); }
+
+.custom-row { align-items: center; }
+.custom-thumb { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; }
+.custom-thumb.big { width: 84px; height: 84px; border-radius: 16px; }
+
+.custom-form {
+  margin-top: 12px;
+  padding: 12px;
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+  background: #fffdf7;
+}
+
+.custom-title { margin: 0 0 8px; font-weight: 800; font-size: 1.15rem; }
+.custom-photo-row { display: flex; align-items: center; gap: 14px; }
+
+.custom-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.custom-nophoto { font-size: 2.2rem; opacity: .5; }
+.custom-error { min-height: 1.3em; margin: 6px 0; color: var(--no); font-weight: 700; }
+.custom-error.ok { color: var(--yes); }
+.custom-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
 .tools {
   display: grid;
   grid-template-columns: 1fr 1fr 1.3fr;
@@ -542,7 +603,7 @@ legend { padding: 0 6px; font-weight: 700; color: var(--muted); }
   font-size: 1.2rem;
 }
 
-.settings input { width: 26px; height: 26px; accent-color: var(--head); }
+.settings input[type="radio"] { width: 26px; height: 26px; accent-color: var(--head); }
 
 .novoice { color: var(--no); font-weight: 600; }
 

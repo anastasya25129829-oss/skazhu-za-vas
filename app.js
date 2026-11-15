@@ -238,16 +238,16 @@ function agree(list) {
   list.forEach(function (w, i) {
     var word = w.word;
     var next = list[i + 1] && list[i + 1].word;
-    var person = PERSONS[word];
+    var person = PERSONS[word] || customPerson(word);
     if (person && STATES.indexOf(next) >= 0) {
       word = person.dat;                       // «я холодно» → «мне холодно»
     } else if (person && REQUESTS.indexOf(next) >= 0) {
       if (!person.callable) return;            // «я дай воду» → «дай воду»
       word = word + ",";                       // «дочь дай» → «дочь, дай»
     } else if (person) {
-      who = word;
+      who = person;
     } else if ((word === "хочу" || word === "не хочу") && who) {
-      word = word.replace("хочу", PERSONS[who].want);   // «дочь хочу» → «дочь хочет»
+      word = word.replace("хочу", who.want);   // «дочь хочу» → «дочь хочет»
     }
     out.push({ icon: w.icon, word: word, who: w.who });
   });
@@ -290,6 +290,12 @@ function iconNode(icon, cls, who) {
     photo.src = photos[who];
     photo.alt = "";
     span.appendChild(photo);
+  } else if (icon.indexOf("data:") === 0) {
+    // фото своей карточки
+    var own = el("img", "photo own");
+    own.src = icon;
+    own.alt = "";
+    span.appendChild(own);
   } else if (icon.indexOf("img:") === 0) {
     var img = el("img", "pic");
     img.src = icon.slice(4);
@@ -318,10 +324,12 @@ function stepStart() { path = ["start"]; finished = false; showStep(); }
 
 function showStep() {
   main.innerHTML = "";
-  var step = STEPS[path[path.length - 1]];
+  var key = path[path.length - 1];
+  var step = STEPS[key];
   main.appendChild(el("h2", "question", step.q));
   var grid = el("div", "grid");
-  step.items.forEach(function (it) {
+  // свои карточки родных — в конце вопроса
+  step.items.concat(customForStep(key)).forEach(function (it) {
     grid.appendChild(card(it.icon, it.word, function () {
       addWord(it.icon, it.word, it.who);
       if (it.next) { path.push(it.next); showStep(); }
@@ -372,7 +380,7 @@ function showBlocks() {
   main.appendChild(tabs);
   var g = GROUPS[groupIndex];
   var grid = el("div", "grid");
-  g.items.forEach(function (it) {
+  g.items.concat(customForGroup(g.name)).forEach(function (it) {
     grid.appendChild(card(it[0], it[1], function () { addWord(it[0], it[1], it[2]); }, "tone-" + g.tone, it[2]));
   });
   main.appendChild(grid);

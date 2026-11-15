@@ -1,6 +1,6 @@
 // Работа без интернета: при установке все файлы приложения сохраняются на устройстве.
 // ПРИ КАЖДОЙ ВЫКЛАДКЕ ПОВЫШАЙ НОМЕР ВЕРСИИ, иначе телефон будет показывать старую версию.
-var VERSION = 16;
+var VERSION = 18;
 
 var PREFIX = "skazhu-za-vas-v";
 var CACHE = PREFIX + VERSION;
@@ -11,6 +11,7 @@ var FILES = [
   "style.css",
   "app.js",
   "lesson.js",
+  "custom.js",
   "manifest.webmanifest",
   "icons/icon.svg",
   "icons/spina.svg",
