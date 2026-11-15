@@ -232,15 +232,21 @@ function showQuiz() {
   window.scrollTo(0, 0);
 }
 
+// Похвала за верный ответ — голосом и текстом, без повтора слова. Фразы по очереди.
+var PRAISE = ["Правильно!", "Отлично!", "Верно!", "Очень хорошо!"];
+var praiseIndex = 0;
+
 function answerRight(btn, it) {
   lesson.answered = true;
   btn.classList.add("right");
-  if (lesson.note) lesson.note.textContent = "👍 Верно!";
+  var praise = PRAISE[praiseIndex++ % PRAISE.length];
+  if (lesson.note) lesson.note.textContent = "👍 " + praise;
+  say(praise);
   // переходим дальше, только если человек за это время не вышел и не пропустил вопрос
   var same = lesson, index = lesson.i;
   setTimeout(function () {
     if (lesson === same && lesson.phase === "quiz" && lesson.i === index) nextQuiz();
-  }, 1300);
+  }, 1700); // чуть дольше, чтобы похвала успела прозвучать
 }
 
 function answerWrong(btn, it, cards) {
