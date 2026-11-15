@@ -228,6 +228,8 @@ function showQuiz() {
   }
 
   lesson.answered = false;
+  // «Сам»: слово звучит сразу, как появился вопрос (только слово, без инструкций)
+  if (isSolo()) say(it[1]);
   lockTaps();
   window.scrollTo(0, 0);
 }
