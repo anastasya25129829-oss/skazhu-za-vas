@@ -310,6 +310,142 @@ body.huge .question { font-size: 1.9rem; }
 
 .big.plain { background: #e7e1d6; }
 
+/* ---------- урок «Учим значки» ---------- */
+
+.modes { grid-template-columns: 1fr 1fr 1fr; }
+
+/* в уроке не нужны «Да / Нет» и полоска предложения */
+body.in-lesson .answers,
+body.in-lesson .strip,
+body.in-lesson .tools { display: none; }
+
+/* вариант «Сам»: прячем переключатель режимов и настройки, чтобы случайно не уйти */
+body.solo-run .top { display: none; }
+
+.lesson-label { margin: 16px 0 8px; font-size: 1.15rem; font-weight: 700; color: var(--muted); }
+
+.who-pick { display: grid; gap: 10px; }
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 78px;
+  padding: 10px 16px;
+  border: 3px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  text-align: left;
+}
+
+.who.on { border-color: var(--head); background: #e6f0ee; }
+.who-icon { font-size: 2.4rem; line-height: 1; }
+.who-text { display: flex; flex-direction: column; gap: 2px; }
+.who-title { font-size: 1.25rem; font-weight: 800; }
+.who-sub { font-size: 1rem; color: var(--muted); }
+
+.lesson-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.lesson-exit {
+  min-height: 50px;
+  padding: 0 14px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.lesson-exit.armed { border-color: var(--no); color: var(--no); }
+
+.lesson-title { flex: 1; font-size: 1.15rem; font-weight: 800; text-align: center; }
+.lesson-count { font-size: 1rem; color: var(--muted); white-space: nowrap; }
+
+.lesson-step { margin: 6px 0 12px; text-align: center; font-size: 1.1rem; color: var(--muted); font-weight: 600; }
+
+.learn-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 26px 16px;
+  border: 3px solid #a9d2d0;
+  border-radius: 24px;
+  background: #fff;
+}
+
+.learn-icon { font-size: 7rem; line-height: 1; }
+.learn-word { font-size: 2.2rem; font-weight: 800; }
+
+.lesson-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-width: 420px;
+  margin: 14px auto 0;
+}
+
+.lesson-buttons .big { margin: 0; max-width: none; font-size: 1.15rem; }
+
+.quiz-word {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 14px;
+  padding: 14px;
+  border: 3px solid var(--head);
+  border-radius: 18px;
+  background: #fffdf7;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.quiz-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 4px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+
+.quiz-icon { font-size: 4rem; line-height: 1; }
+
+.quiz-card.right { border-color: var(--yes); background: #e7f4ec; }
+.quiz-card.hint { animation: pulse 1.2s ease-in-out infinite; border-color: #e0b84a; }
+.quiz-card.shake { animation: shake .4s; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+body.huge .learn-icon { font-size: 9rem; }
+body.huge .quiz-icon { font-size: 5rem; }
+
 /* ---------- настройки ---------- */
 
 dialog {

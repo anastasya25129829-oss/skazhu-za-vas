@@ -174,12 +174,13 @@ function photoFromFile(file) {
 }
 
 // ---------- настройки ----------
-var settings = { mode: "steps", rate: "slow", size: "big" };
+var settings = { mode: "steps", rate: "slow", size: "big", lessonWho: "helper" };
 
 function loadSettings() {
   try {
     var s = JSON.parse(localStorage.getItem("skazhu-settings") || "{}");
-    if (s.mode === "steps" || s.mode === "blocks") settings.mode = s.mode;
+    if (s.mode === "steps" || s.mode === "blocks" || s.mode === "lesson") settings.mode = s.mode;
+    if (s.lessonWho === "helper" || s.lessonWho === "solo") settings.lessonWho = s.lessonWho;
     if (s.rate === "slow" || s.rate === "normal") settings.rate = s.rate;
     if (s.size === "big" || s.size === "huge") settings.size = s.size;
   } catch (e) { /* без памяти браузера — настройки по умолчанию */ }
@@ -197,9 +198,10 @@ function pickVoice() {
   // голоса иногда приходят не сразу: предупреждаем, только когда список уже есть
   document.getElementById("novoice").hidden = !!voice || voices.length === 0;
 }
-function say(text) {
+// after = true — сказать после того, что уже звучит (не перебивая)
+function say(text, after) {
   if (!text || !("speechSynthesis" in window)) return;
-  speechSynthesis.cancel();
+  if (!after) speechSynthesis.cancel();
   var u = new SpeechSynthesisUtterance(text);
   u.lang = "ru-RU";
   if (voice) u.voice = voice;
@@ -341,17 +343,24 @@ function setMode(mode) {
   saveSettings();
   sentence = [];
   renderSentence();
-  document.getElementById("m-steps").classList.toggle("on", mode === "steps");
-  document.getElementById("m-blocks").classList.toggle("on", mode === "blocks");
-  document.getElementById("m-steps").setAttribute("aria-selected", mode === "steps");
-  document.getElementById("m-blocks").setAttribute("aria-selected", mode === "blocks");
+  ["steps", "blocks", "lesson"].forEach(function (m) {
+    var b = document.getElementById("m-" + m);
+    b.classList.toggle("on", mode === m);
+    b.setAttribute("aria-selected", mode === m);
+  });
+  // в уроке не нужны «Да / Нет» и полоска предложения
+  document.body.classList.toggle("in-lesson", mode === "lesson");
+  document.body.classList.remove("solo-run");
+  if (typeof lesson !== "undefined") lesson = null; // урок закрывается при смене режима
   window.scrollTo(0, 0);
   if (mode === "steps") stepStart();
-  else { groupIndex = 0; showBlocks(); }
+  else if (mode === "blocks") { groupIndex = 0; showBlocks(); }
+  else showLessonStart();
 }
 
 document.getElementById("m-steps").addEventListener("click", function () { setMode("steps"); });
 document.getElementById("m-blocks").addEventListener("click", function () { setMode("blocks"); });
+document.getElementById("m-lesson").addEventListener("click", function () { setMode("lesson"); });
 
 // ---------- кнопки над экраном ----------
 document.querySelectorAll(".answer").forEach(function (b) {
@@ -393,6 +402,7 @@ var peopleEl = document.getElementById("people");
 // после смены фото перерисовываем то, что сейчас на экране
 function refreshScreen() {
   renderSentence();
+  if (settings.mode === "lesson") return; // урок перерисуется на следующей карточке
   if (settings.mode === "blocks") showBlocks();
   else if (!finished) showStep();
 }
@@ -450,7 +460,8 @@ loadPhotos();
 renderPeople();
 loadSettings();
 applySize();
-setMode(settings.mode);
+// приложение всегда открывается в режиме общения, урок запускают кнопкой «Учим»
+setMode(settings.mode === "lesson" ? "steps" : settings.mode);
 
 if ("speechSynthesis" in window) {
   pickVoice();
