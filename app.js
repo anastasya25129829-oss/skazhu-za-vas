@@ -174,13 +174,15 @@ function photoFromFile(file) {
 }
 
 // ---------- настройки ----------
-var settings = { mode: "steps", rate: "slow", size: "big", lessonWho: "helper" };
+// speakEach: "button" — в «По шагам» говорить только по кнопке «Сказать», "each" — каждое нажатое слово сразу
+var settings = { mode: "steps", rate: "slow", size: "big", lessonWho: "helper", speakEach: "button" };
 
 function loadSettings() {
   try {
     var s = JSON.parse(localStorage.getItem("skazhu-settings") || "{}");
     if (s.mode === "steps" || s.mode === "blocks" || s.mode === "lesson") settings.mode = s.mode;
     if (s.lessonWho === "helper" || s.lessonWho === "solo") settings.lessonWho = s.lessonWho;
+    if (s.speakEach === "button" || s.speakEach === "each") settings.speakEach = s.speakEach;
     if (s.rate === "slow" || s.rate === "normal") settings.rate = s.rate;
     if (s.size === "big" || s.size === "huge") settings.size = s.size;
   } catch (e) { /* без памяти браузера — настройки по умолчанию */ }
@@ -332,6 +334,8 @@ function showStep() {
   step.items.concat(customForStep(key)).forEach(function (it) {
     grid.appendChild(card(it.icon, it.word, function () {
       addWord(it.icon, it.word, it.who);
+      // настройка «каждое слово сразу»: нажатое слово звучит тут же
+      if (settings.speakEach === "each") say(it.word);
       if (it.next) { path.push(it.next); showStep(); }
       else showDone();
     }, "tone-step", it.who));
@@ -462,7 +466,7 @@ document.getElementById("undo").addEventListener("click", function () {
 // ---------- окно настроек ----------
 var dialog = document.getElementById("settings");
 document.getElementById("gear").addEventListener("click", function () {
-  ["rate", "size"].forEach(function (name) {
+  ["rate", "size", "speakEach"].forEach(function (name) {
     var input = dialog.querySelector('input[name="' + name + '"][value="' + settings[name] + '"]');
     if (input) input.checked = true;
   });
