@@ -1,0 +1,368 @@
+:root {
+  --bg: #f5f1ea;
+  --ink: #1d2a2e;
+  --muted: #5b6a6e;
+  --head: #1f4e5a;
+  --card: #ffffff;
+  --line: #ddd5c8;
+  --yes: #2e7d4f;
+  --no: #b5523b;
+  --dunno: #6b7275;
+  --tile: 150px;
+  --font: 1.3rem;
+  --icon: 3.2rem;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.3;
+  min-height: 100vh;
+}
+
+body.huge {
+  --tile: 200px;
+  --font: 1.65rem;
+  --icon: 4.2rem;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+
+/* ---------- верх ---------- */
+
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .05);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  padding-top: max(8px, env(safe-area-inset-top));
+  background: var(--head);
+}
+
+.modes {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.modes button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modes button.on { background: #fff; color: var(--head); }
+
+.gear {
+  flex: 0 0 auto;
+  border: 0;
+  background: rgba(255, 255, 255, .14);
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  font-size: 1.4rem;
+}
+
+/* да / нет / не знаю */
+
+.answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 10px 16px 0;
+}
+
+.answer {
+  border: 0;
+  border-radius: 16px;
+  min-height: 60px;
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 800;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .18);
+}
+
+body.huge .answer { min-height: 76px; font-size: 1.75rem; }
+
+.answer.yes { background: var(--yes); }
+.answer.no { background: var(--no); }
+.answer.dunno { background: var(--dunno); font-size: 1.2rem; }
+body.huge .answer.dunno { font-size: 1.45rem; }
+.answer:active { transform: translateY(2px); box-shadow: none; }
+
+/* полоска предложения */
+
+.strip { padding: 10px 16px 8px; }
+
+.words {
+  width: 100%;
+  min-height: 68px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #fffdf7;
+  border: 3px solid var(--head);
+  border-radius: 16px;
+  text-align: left;
+}
+
+.words:empty::before {
+  content: "Здесь будет предложение";
+  color: #8a9598;
+  font-size: 1.05rem;
+}
+
+.words.flash { animation: flash .7s ease-out; }
+
+@keyframes flash {
+  0% { background: #fff1a8; }
+  100% { background: #fffdf7; }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: #e6f0ee;
+  border-radius: 10px;
+  font-size: 1.35rem;
+  font-weight: 750;
+}
+
+body.huge .chip { font-size: 1.65rem; }
+
+.chip-icon { font-size: 1.15em; }
+
+/* свои рисунки вместо эмодзи — того же размера, что и эмодзи */
+.pic { display: block; width: 1.2em; height: 1.2em; }
+.chip-icon .pic { width: 1.1em; height: 1.1em; }
+
+/* фото близких: круглое, крупнее значка */
+.photo {
+  display: block;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--line);
+}
+.chip-icon .photo { width: 1.4em; height: 1.4em; border-width: 2px; }
+
+/* фото близких в настройках */
+.hint { margin: 0 0 8px; color: var(--muted); font-size: 1rem; }
+
+.person {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.person-pic { font-size: 2.2rem; line-height: 1; }
+.person-pic .photo { width: 1.3em; height: 1.3em; }
+
+.person-name { flex: 1; font-size: 1.2rem; font-weight: 700; }
+
+.person-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--head);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.person-btn.remove { background: #e7e1d6; color: var(--ink); }
+
+.tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap: 8px;
+  padding: 0 16px 10px;
+}
+
+.tool {
+  min-height: 54px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.tool.undo, .tool.clear { background: #e7e1d6; }
+.tool.speak, .big.speak { background: var(--yes); color: #fff; }
+
+/* ---------- плитки ---------- */
+
+main { padding: 14px 16px 40px; }
+
+.question {
+  margin: 2px 0 12px;
+  font-size: 1.55rem;
+  text-align: center;
+}
+
+body.huge .question { font-size: 1.9rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: calc(var(--tile) * .88);
+  padding: 12px 8px;
+  border: 3px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  text-align: center;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .06);
+}
+
+.card .icon { font-size: var(--icon); line-height: 1; }
+.card .label { font-size: var(--font); font-weight: 700; overflow-wrap: anywhere; }
+.card:active { transform: scale(.97); background: #fff6c9; }
+
+.tone-step { border-color: #a9d2d0; }
+.tone-who { border-color: #e7d79c; }
+.tone-act { border-color: #b8d8b4; }
+.tone-obj { border-color: #b9cde3; }
+.tone-place { border-color: #cdbfe0; }
+.tone-feel { border-color: #ecc9a3; }
+
+/* группы кубиков: переносятся, а не листаются вбок */
+
+.groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.group {
+  flex: 1 1 auto;
+  min-height: 50px;
+  padding: 8px 14px;
+  border: 3px solid;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 1.1rem;
+  font-weight: 750;
+}
+
+.group.on { background: var(--head); border-color: var(--head); color: #fff; }
+
+/* готово */
+
+.done { text-align: center; padding-top: 10px; }
+.done-mark { font-size: 3.5rem; margin: 0; }
+.done-hint { font-size: 1.2rem; color: var(--muted); margin: 0 0 16px; }
+
+.big {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 10px auto;
+  min-height: 66px;
+  border: 0;
+  border-radius: 16px;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.big.plain { background: #e7e1d6; }
+
+/* ---------- настройки ---------- */
+
+dialog {
+  border: 0;
+  border-radius: 22px;
+  padding: 0;
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+}
+
+dialog::backdrop { background: rgba(0, 0, 0, .45); }
+
+.settings { padding: 20px; }
+.settings h2 { margin: 0 0 12px; font-size: 1.5rem; }
+
+fieldset {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+}
+
+legend { padding: 0 6px; font-weight: 700; color: var(--muted); }
+
+.settings label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  font-size: 1.2rem;
+}
+
+.settings input { width: 26px; height: 26px; accent-color: var(--head); }
+
+.novoice { color: var(--no); font-weight: 600; }
+
+.close {
+  width: 100%;
+  min-height: 60px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--head);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+@media (max-width: 400px) {
+  :root { --tile: 140px; --font: 1.2rem; --icon: 2.8rem; }
+  body.huge { --tile: 100%; --font: 1.5rem; --icon: 3.6rem; }
+  .modes button { font-size: 1rem; }
+  .answer { font-size: 1.3rem; }
+  .answer.dunno { font-size: 1.05rem; }
+  .tool { font-size: 1rem; }
+  .question { font-size: 1.35rem; }
+}

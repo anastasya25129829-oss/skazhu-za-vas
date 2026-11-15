@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Скажу за вас</title>
+  <meta name="description" content="Сборка предложения из картинок для взрослых с афазией: телефон произносит его вслух.">
+  <meta name="theme-color" content="#1f4e5a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sticky">
+    <header class="top">
+      <div class="modes" role="tablist" aria-label="Режим">
+        <button id="m-steps" type="button" role="tab">По шагам</button>
+        <button id="m-blocks" type="button" role="tab">Кубики</button>
+      </div>
+      <button class="gear" id="gear" type="button" aria-label="Настройки">⚙️</button>
+    </header>
+
+    <nav class="answers" aria-label="Быстрые ответы">
+      <button class="answer yes" type="button" data-say="Да">Да</button>
+      <button class="answer no" type="button" data-say="Нет">Нет</button>
+      <button class="answer dunno" type="button" data-say="Не знаю">Не знаю</button>
+    </nav>
+
+    <div class="strip">
+      <button class="words" id="words" type="button" aria-label="Собранное предложение, нажмите, чтобы услышать"></button>
+    </div>
+    <div class="tools">
+      <button class="tool undo" id="undo" type="button">⌫ Убрать</button>
+      <button class="tool clear" id="clear" type="button">✖ Сначала</button>
+      <button class="tool speak" id="speak" type="button">🔊 Сказать</button>
+    </div>
+  </div>
+
+  <main id="main"></main>
+
+  <dialog id="settings">
+    <form method="dialog" class="settings">
+      <h2>Настройки</h2>
+      <fieldset>
+        <legend>Голос</legend>
+        <label><input type="radio" name="rate" value="slow"> медленно</label>
+        <label><input type="radio" name="rate" value="normal"> обычно</label>
+      </fieldset>
+      <fieldset>
+        <legend>Кнопки</legend>
+        <label><input type="radio" name="size" value="big"> крупные</label>
+        <label><input type="radio" name="size" value="huge"> очень крупные</label>
+      </fieldset>
+      <fieldset>
+        <legend>Фото близких</legend>
+        <p class="hint">Фото встанет вместо картинки у «жены», «дочери», «друга» и других. Фото хранятся только на этом телефоне и никуда не отправляются.</p>
+        <div id="people"></div>
+      </fieldset>
+      <p class="novoice" id="novoice" hidden>На этом устройстве нет русского голоса. Предложение будет видно крупными буквами вверху экрана.</p>
+      <button class="close" value="close">Готово</button>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
