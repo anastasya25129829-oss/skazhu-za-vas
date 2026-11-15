@@ -143,13 +143,14 @@ function lessonHeader(progress) {
 
 // ---------- шаг 1: смотрим и слушаем ----------
 
-// Слово звучит только по кнопке «🔊 Послушать», само приложение ничего не говорит
+// Картинка появилась — сразу звучит только слово, без инструкций.
+// «🔊 Послушать» повторяет. Это единственное место, где приложение говорит само.
 function showLearn() {
   var items = lesson.topic.items;
   var it = items[lesson.i];
   main.innerHTML = "";
   main.appendChild(lessonHeader((lesson.i + 1) + " из " + items.length));
-  main.appendChild(el("p", "lesson-step", isSolo() ? "Посмотрите и нажмите «Послушать»" : "Смотрим и слушаем"));
+  main.appendChild(el("p", "lesson-step", "Смотрим и слушаем"));
 
   var big = el("div", "learn-card");
   big.appendChild(iconNode(it[0], "learn-icon", it[2]));
@@ -166,6 +167,7 @@ function showLearn() {
   }));
   main.appendChild(row);
 
+  say(it[1]);
   lockTaps();
   window.scrollTo(0, 0);
 }
