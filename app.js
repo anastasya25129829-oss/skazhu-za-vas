@@ -337,30 +337,61 @@ function showBlocks() {
   main.appendChild(grid);
 }
 
-// ---------- переключение режимов ----------
+// ---------- выбор задания и переключение режимов ----------
+var MODES = [
+  { id: "steps", icon: "👣", title: "По шагам", sub: "приложение ведёт, вопрос за вопросом" },
+  { id: "blocks", icon: "🧩", title: "Кубики", sub: "слова в любом порядке" },
+  { id: "lesson", icon: "🎓", title: "Учим", sub: "урок: что значит каждый значок" }
+];
+
+var titleEl = document.getElementById("mode-title");
+
+function resetScreen() {
+  sentence = [];
+  renderSentence();
+  document.body.classList.remove("solo-run");
+  if (typeof lesson !== "undefined") lesson = null; // урок закрывается при смене задания
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  window.scrollTo(0, 0);
+}
+
+// Отдельный экран при открытии: три большие кнопки. После выбора остаётся только задание.
+function showChooser() {
+  resetScreen();
+  document.body.classList.add("choosing");
+  document.body.classList.remove("in-lesson");
+  titleEl.textContent = "Выберите задание";
+  main.innerHTML = "";
+  var list = el("div", "chooser");
+  MODES.forEach(function (m) {
+    var b = el("button", "choice");
+    b.type = "button";
+    b.appendChild(el("span", "choice-icon", m.icon)).setAttribute("aria-hidden", "true");
+    var t = el("span", "choice-text");
+    t.appendChild(el("span", "choice-title", m.title));
+    t.appendChild(el("span", "choice-sub", m.sub));
+    b.appendChild(t);
+    b.addEventListener("click", function () { setMode(m.id); });
+    list.appendChild(b);
+  });
+  main.appendChild(list);
+}
+
 function setMode(mode) {
   settings.mode = mode;
   saveSettings();
-  sentence = [];
-  renderSentence();
-  ["steps", "blocks", "lesson"].forEach(function (m) {
-    var b = document.getElementById("m-" + m);
-    b.classList.toggle("on", mode === m);
-    b.setAttribute("aria-selected", mode === m);
-  });
+  resetScreen();
+  document.body.classList.remove("choosing");
   // в уроке не нужны «Да / Нет» и полоска предложения
   document.body.classList.toggle("in-lesson", mode === "lesson");
-  document.body.classList.remove("solo-run");
-  if (typeof lesson !== "undefined") lesson = null; // урок закрывается при смене режима
-  window.scrollTo(0, 0);
+  titleEl.textContent = MODES.filter(function (m) { return m.id === mode; })[0].title;
   if (mode === "steps") stepStart();
   else if (mode === "blocks") { groupIndex = 0; showBlocks(); }
   else showLessonStart();
 }
 
-document.getElementById("m-steps").addEventListener("click", function () { setMode("steps"); });
-document.getElementById("m-blocks").addEventListener("click", function () { setMode("blocks"); });
-document.getElementById("m-lesson").addEventListener("click", function () { setMode("lesson"); });
+// «← Назад» в шапке — к выбору задания
+document.getElementById("home").addEventListener("click", showChooser);
 
 // ---------- кнопки над экраном ----------
 document.querySelectorAll(".answer").forEach(function (b) {
@@ -402,7 +433,8 @@ var peopleEl = document.getElementById("people");
 // после смены фото перерисовываем то, что сейчас на экране
 function refreshScreen() {
   renderSentence();
-  if (settings.mode === "lesson") return; // урок перерисуется на следующей карточке
+  // на выборе задания и в уроке перерисовывать нечего (урок обновится на следующей карточке)
+  if (document.body.classList.contains("choosing") || settings.mode === "lesson") return;
   if (settings.mode === "blocks") showBlocks();
   else if (!finished) showStep();
 }
@@ -460,8 +492,8 @@ loadPhotos();
 renderPeople();
 loadSettings();
 applySize();
-// приложение всегда открывается в режиме общения, урок запускают кнопкой «Учим»
-setMode(settings.mode === "lesson" ? "steps" : settings.mode);
+// при открытии — отдельный экран выбора задания
+showChooser();
 
 if ("speechSynthesis" in window) {
   pickVoice();
