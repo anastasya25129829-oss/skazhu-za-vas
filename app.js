@@ -213,13 +213,54 @@ function say(text, after) {
 var sentence = []; // [{ icon, word }]
 var wordsEl = document.getElementById("words");
 
+// ---------- согласование слов в «Кубиках» ----------
+// Кубики лежат в одной форме («хочу», «я»), а человек может поставить их как угодно.
+// Перед показом и озвучкой приложение поправляет окончания:
+// «дочь хочу пить» → «дочь хочет пить», «я холодно» → «мне холодно»,
+// «дочь дай воду» → «дочь, дай воду».
+var PERSONS = {
+  "я":     { want: "хочу",   dat: "мне",    callable: false },
+  "ты":    { want: "хочешь", dat: "тебе",   callable: false },
+  "мы":    { want: "хотим",  dat: "нам",    callable: false },
+  "дочь":  { want: "хочет",  dat: "дочери", callable: true },
+  "сын":   { want: "хочет",  dat: "сыну",   callable: true },
+  "жена":  { want: "хочет",  dat: "жене",   callable: true },
+  "муж":   { want: "хочет",  dat: "мужу",   callable: true },
+  "внуки": { want: "хотят",  dat: "внукам", callable: true },
+  "друг":  { want: "хочет",  dat: "другу",  callable: true }
+};
+var STATES = ["холодно", "жарко", "больно", "плохо", "хорошо"];
+var REQUESTS = ["дай", "помоги"];
+
+function agree(list) {
+  var out = [];
+  var who = null; // кто говорит или о ком речь
+  list.forEach(function (w, i) {
+    var word = w.word;
+    var next = list[i + 1] && list[i + 1].word;
+    var person = PERSONS[word];
+    if (person && STATES.indexOf(next) >= 0) {
+      word = person.dat;                       // «я холодно» → «мне холодно»
+    } else if (person && REQUESTS.indexOf(next) >= 0) {
+      if (!person.callable) return;            // «я дай воду» → «дай воду»
+      word = word + ",";                       // «дочь дай» → «дочь, дай»
+    } else if (person) {
+      who = word;
+    } else if ((word === "хочу" || word === "не хочу") && who) {
+      word = word.replace("хочу", PERSONS[who].want);   // «дочь хочу» → «дочь хочет»
+    }
+    out.push({ icon: w.icon, word: word, who: w.who });
+  });
+  return out;
+}
+
 function sentenceText() {
-  var t = sentence.map(function (w) { return w.word; }).join(" ");
+  var t = agree(sentence).map(function (w) { return w.word; }).join(" ");
   return t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
 }
 function renderSentence() {
   wordsEl.innerHTML = "";
-  sentence.forEach(function (w) {
+  agree(sentence).forEach(function (w) {
     var chip = el("span", "chip");
     chip.appendChild(iconNode(w.icon, "chip-icon", w.who));
     chip.appendChild(el("span", null, w.word));
